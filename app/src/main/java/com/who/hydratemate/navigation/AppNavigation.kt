@@ -53,7 +53,16 @@ fun AppNavigation() {
                         .fillMaxSize()
                         .noRippleClickable {
                             selectedIndex.intValue = item.ordinal
-                            navController.navigate(AppScreens.entries[selectedIndex.intValue].name)
+                            navController.navigate(
+                                route = AppScreens.entries[selectedIndex.intValue].name,
+                                builder = {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true // saveState is true by default
+                                    }
+                                    launchSingleTop = true // Reuse existing composable if it's already on the back stack
+                                    restoreState = true // Restore state when re selecting a previously selected item
+                                }
+                            )
                         },
                         contentAlignment = Alignment.Center) {
                         Icon(

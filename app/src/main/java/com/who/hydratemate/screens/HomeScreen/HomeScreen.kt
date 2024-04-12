@@ -30,7 +30,9 @@ import com.who.hydratemate.utils.fontFamily
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = viewModel()
+) {
     Column(
         modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
