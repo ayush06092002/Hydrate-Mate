@@ -81,6 +81,9 @@ dependencies {
     //Bottom Navigation Bar
     implementation(libs.animated.navigation.bar)
 
+    //Circular Progress Bar
+    implementation("com.github.hitanshu-dhawan:CircularProgressBar-Compose:1.0.0-rc01")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

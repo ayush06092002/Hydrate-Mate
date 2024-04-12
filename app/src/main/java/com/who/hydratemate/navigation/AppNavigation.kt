@@ -36,7 +36,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val selectedIndex = remember { mutableIntStateOf(0) }
     Scaffold(
-        modifier = Modifier.padding(10.dp),
+        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+        containerColor = Color(0xFFF5F5F6),
         bottomBar = {
             AnimatedNavigationBar(
                 modifier = Modifier.height(64.dp),
@@ -44,8 +45,8 @@ fun AppNavigation() {
                 selectedIndex = selectedIndex.intValue,
                 ballAnimation = Straight(tween(300)),
                 indentAnimation = Height(tween(500)),
-                barColor = Color(0xFF03A9F4),
-                ballColor = Color.White,
+                barColor = Color(0xFF48CAE4),
+                ballColor = Color(0xFF023E8A),
             ) {
                 bottomBarItems.entries.forEach {item->
                     Box(modifier = Modifier
@@ -58,11 +59,10 @@ fun AppNavigation() {
                         Icon(
                             modifier = Modifier.size(24.dp),
                             painter = painterResource(id = item.iconId),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = if (selectedIndex.intValue == item.ordinal) Color.White else Color.Gray
                         )
                     }
-
-
                 }
             }
         }
