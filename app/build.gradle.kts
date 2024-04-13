@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
-
 }
 
 android {
@@ -73,6 +72,12 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     kapt(libs.hilt.android.compiler)
 
+    //Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.ktx)
+
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
@@ -83,6 +88,8 @@ dependencies {
 
     //Circular Progress Bar
     implementation("com.github.hitanshu-dhawan:CircularProgressBar-Compose:1.0.0-rc01")
+
+    implementation(libs.annotations)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

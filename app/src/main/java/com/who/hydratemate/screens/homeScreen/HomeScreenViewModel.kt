@@ -1,4 +1,4 @@
-package com.who.hydratemate.screens.HomeScreen
+package com.who.hydratemate.screens.homeScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

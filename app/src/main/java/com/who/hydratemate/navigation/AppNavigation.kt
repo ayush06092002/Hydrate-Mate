@@ -25,16 +25,18 @@ import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.who.hydratemate.R
-import com.who.hydratemate.screens.HomeScreen.HomeScreen
-import com.who.hydratemate.screens.NotiScreen.NotificationScreen
-import com.who.hydratemate.screens.SettingsScreen.SettingsScreen
+import com.who.hydratemate.screens.homeScreen.HomeScreen
+import com.who.hydratemate.screens.notiScreen.NotificationScreen
+import com.who.hydratemate.screens.settingsScreen.SettingsScreen
 import com.who.hydratemate.utils.noRippleClickable
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val selectedIndex = remember { mutableIntStateOf(0) }
+    val selectedIndex = remember { mutableIntStateOf(
+        BottomBarItems.Home.ordinal
+    ) }
     Scaffold(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp),
         containerColor = Color(0xFFF5F5F6),
@@ -48,7 +50,7 @@ fun AppNavigation() {
                 barColor = Color(0xFF48CAE4),
                 ballColor = Color(0xFF023E8A),
             ) {
-                bottomBarItems.entries.forEach {item->
+                BottomBarItems.entries.forEach { item->
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .noRippleClickable {
@@ -57,10 +59,10 @@ fun AppNavigation() {
                                 route = AppScreens.entries[selectedIndex.intValue].name,
                                 builder = {
                                     popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true // saveState is true by default
+                                        saveState = true
                                     }
-                                    launchSingleTop = true // Reuse existing composable if it's already on the back stack
-                                    restoreState = true // Restore state when re selecting a previously selected item
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             )
                         },
@@ -95,7 +97,7 @@ fun AppNavigation() {
 
 }
 
-enum class bottomBarItems(val iconId: Int){
+enum class BottomBarItems(val iconId: Int){
 
     Home(iconId = R.drawable.home),
     Notifications(iconId = R.drawable.notification),
