@@ -14,7 +14,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +34,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
@@ -53,13 +57,21 @@ fun HomeScreen(
             contentAlignment = Alignment.Center
         )
         {
-            val progressState by
-            animateFloatAsState(targetValue = if (viewModel.showProgress.value) 80f else 0f,
-                label = "progressState",
-                animationSpec = tween(1500, easing = LinearEasing))
+            //animate the progress bar
+            var progressState by remember { mutableFloatStateOf(0f) }
+            val animatedProgressState by animateFloatAsState(
+                targetValue = progressState,
+                animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+                label = "progressState"
+            )
+
+            LaunchedEffect(progressState) {
+                progressState = 50f // Set the target progress value
+            }
+
             CircularProgressBar(
                 modifier = Modifier.size(240.dp),
-                progress = progressState,
+                progress = animatedProgressState,
                 progressMax = 100f,
                 progressBarColor = Color(0xFF48CAE4),
                 progressBarWidth = 20.dp,
@@ -68,20 +80,6 @@ fun HomeScreen(
                 roundBorder = true,
                 startAngle = 180f
             )
-
-            Button(onClick = {
-                viewModel.toggleShowProgress()
-            }) {
-                Text(
-                    text = "Check Progress",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = fontFamily,
-                    ),
-                    fontSize = 12.sp,
-                    color = Color.White
-                )
-            }
         }
     }
 }

@@ -74,7 +74,7 @@ dependencies {
 
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
+//    annotationProcessor("androidx.room:room-compiler:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
 
@@ -90,6 +90,9 @@ dependencies {
     implementation("com.github.hitanshu-dhawan:CircularProgressBar-Compose:1.0.0-rc01")
 
     implementation(libs.annotations)
+
+    //Permission
+    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

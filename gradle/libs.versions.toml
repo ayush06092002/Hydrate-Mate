@@ -1,5 +1,6 @@
 [versions]
-agp = "8.3.1"
+accompanistPermissions = "0.35.0-alpha"
+agp = "8.3.2"
 animatedNavigationBar = "1.0.0"
 annotations = "24.0.0"
 converterGson = "2.7.2"
@@ -20,6 +21,7 @@ roomCompiler = "2.6.1"
 roomKtx = "2.6.1"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }

@@ -1,6 +1,8 @@
 package com.who.hydratemate.navigation
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,11 +28,14 @@ import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.who.hydratemate.R
+import com.who.hydratemate.data.NotificationViewModel
 import com.who.hydratemate.screens.homeScreen.HomeScreen
 import com.who.hydratemate.screens.notiScreen.NotificationScreen
 import com.who.hydratemate.screens.settingsScreen.SettingsScreen
 import com.who.hydratemate.utils.noRippleClickable
+import dagger.hilt.android.lifecycle.HiltViewModel
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppNavigation() {
