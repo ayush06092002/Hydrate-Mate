@@ -3,16 +3,17 @@ package com.who.hydratemate.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
+import org.jetbrains.annotations.NotNull
 
 
 @Entity(tableName = "notifications")
 data class Notifications(
+    @NotNull
     @PrimaryKey
     @ColumnInfo(name = "time")
-    val time: Long,
+    var time: Long,
     @ColumnInfo(name = "title")
-    val title: String,
+    var title: String,
     @ColumnInfo(name = "message")
-    val completed: Boolean
+    var completed: Boolean
 )

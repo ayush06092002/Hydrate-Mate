@@ -16,14 +16,14 @@ class AndroidAlarmScheduler(
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
     @SuppressLint("ShortAlarm")
-    override fun schedule(item: AlarmItem) {
+    override fun schedule(item: Notifications) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("notification", item.title)
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-//            item.time.times(1000), // convert seconds to milliseconds
-            item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
+            item.time,
+//            item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
                 item.hashCode(),
@@ -33,7 +33,7 @@ class AndroidAlarmScheduler(
         )
     }
 
-    override fun cancel(item: AlarmItem) {
+    override fun cancel(item: Notifications) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,

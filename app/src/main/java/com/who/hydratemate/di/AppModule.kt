@@ -13,21 +13,20 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+class AppModule {
     @Singleton
     @Provides
-    fun providesNotificationDao(notificationDatabase: NotificationDatabase): NotificationDao {
-        return notificationDatabase.notificationDao()
-    }
+    fun providesNotificationDao(notificationDatabase: NotificationDatabase): NotificationDao
+    = notificationDatabase.notificationDao()
+
 
     @Singleton
     @Provides
-    fun provideNotificationDatabase(@ApplicationContext context: Context): NotificationDatabase {
-        return Room.databaseBuilder(
+    fun provideNotificationDatabase(@ApplicationContext context: Context): NotificationDatabase
+    = Room.databaseBuilder(
             context,
             NotificationDatabase::class.java,
             "notification_database"
         ).fallbackToDestructiveMigration().build()
-    }
 
 }

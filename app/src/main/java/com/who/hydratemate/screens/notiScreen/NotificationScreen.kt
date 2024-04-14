@@ -21,16 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.who.hydratemate.data.AlarmItem
 import com.who.hydratemate.data.AndroidAlarmScheduler
-import com.who.hydratemate.data.NotificationViewModel
 import com.who.hydratemate.models.Notifications
-import com.who.hydratemate.service.NotificationService
-import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -38,13 +33,12 @@ import java.time.ZoneId
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
-//    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel
 ) {
     val notificationPermission = rememberPermissionState(
         permission = android.Manifest.permission.POST_NOTIFICATIONS
     )
     val scheduler = AndroidAlarmScheduler(LocalContext.current)
-    var alarmItem: AlarmItem? = null
     LaunchedEffect(key1 = true) {
         if (!notificationPermission.status.isGranted) {
             notificationPermission.launchPermissionRequest()
@@ -91,32 +85,40 @@ fun NotificationScreen(
 //                    title = messageText,
 //                    completed = false
 //                ))
-//                scheduler.schedule(Notifications(
-//                    time = LocalDateTime.now()
-//                        .plusSeconds(secondsText.toLong())
-//                        .atZone(ZoneId.systemDefault())
-//                        .toInstant()
-//                        .toEpochMilli(),
-//                    title = messageText,
-//                    completed = false
-//                ))
-//                secondsText = ""
-//                messageText = ""
-                Log.d("NotificationScreen", "Notification scheduled for $secondsText seconds from now.")
-                alarmItem = AlarmItem(
+                scheduler.schedule(Notifications(
                     time = LocalDateTime.now()
-                        .plusSeconds(secondsText.toLong()),
-                    title = messageText
-                )
-                alarmItem?.let(scheduler::schedule)
+                        .plusSeconds(secondsText.toLong())
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli(),
+                    title = messageText,
+                    completed = false
+                ))
+                Log.d("NotificationScreen", "Notification scheduled for $secondsText seconds from now.")
                 secondsText = ""
                 messageText = ""
+//                alarmItem = AlarmItem(
+//                    time = LocalDateTime.now()
+//                        .plusSeconds(secondsText.toLong()),
+//                    title = messageText
+//                )
+//                alarmItem?.let(scheduler::schedule)
+//                secondsText = ""
+//                messageText = ""
             }, modifier = Modifier.padding(16.dp)) {
                 Text("Schedule Notification")
             }
 
             Button(onClick = {
-                alarmItem?.let(scheduler::cancel)
+                scheduler.cancel(Notifications(
+                    time = LocalDateTime.now()
+                        .plusSeconds(secondsText.toLong())
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli(),
+                    title = messageText,
+                    completed = false
+                ))
                 secondsText = ""
                 messageText = ""
             },
