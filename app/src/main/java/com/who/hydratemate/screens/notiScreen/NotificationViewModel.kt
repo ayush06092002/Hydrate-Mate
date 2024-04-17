@@ -1,12 +1,14 @@
 package com.who.hydratemate.screens.notiScreen
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.who.hydratemate.models.Notifications
 import com.who.hydratemate.repository.NotificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,6 +62,27 @@ class NotificationViewModel @Inject constructor(private val repository: Notifica
     fun insertNotification(notification: Notifications){
         viewModelScope.launch {
             repository.insertNotification(notification)
+        }
+    }
+
+    fun markCompleted(id: Long){
+        viewModelScope.launch {
+            repository.markCompleted(id)
+        }
+    }
+
+    fun markIncomplete(id: Long){
+        viewModelScope.launch {
+            repository.markIncomplete(id)
+        }
+    }
+    private val _completedNotificationsCount = MutableLiveData<Int>()
+    val completedNotificationsCount: LiveData<Int> get() = _completedNotificationsCount
+
+    fun getCompletedNotificationsCount() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val count = repository.getCompletedNotificationsCount()
+            _completedNotificationsCount.postValue(count)
         }
     }
 }

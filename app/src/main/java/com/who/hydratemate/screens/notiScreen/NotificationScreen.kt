@@ -1,7 +1,6 @@
 package com.who.hydratemate.screens.notiScreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,10 +34,13 @@ import java.time.ZoneId
 fun NotificationScreen(
     notificationViewModel: NotificationViewModel
 ) {
+    var notificationItem: Notifications? by remember{
+        mutableStateOf(null)
+    }
     val notificationPermission = rememberPermissionState(
         permission = android.Manifest.permission.POST_NOTIFICATIONS
     )
-    val scheduler = AndroidAlarmScheduler(LocalContext.current)
+    val scheduler = AndroidAlarmScheduler(LocalContext.current, notificationViewModel)
     LaunchedEffect(key1 = true) {
         if (!notificationPermission.status.isGranted) {
             notificationPermission.launchPermissionRequest()
@@ -76,49 +78,25 @@ fun NotificationScreen(
             modifier = Modifier.fillMaxWidth()
         ){
             Button(onClick = {
-//                notificationViewModel.insertNotification(Notifications(
-//                    time = LocalDateTime.now()
-//                        .plusSeconds(secondsText.toLong())
-//                        .atZone(ZoneId.systemDefault())
-//                        .toInstant()
-//                        .toEpochMilli(),
-//                    title = messageText,
-//                    completed = false
-//                ))
-                scheduler.schedule(Notifications(
+                notificationItem = Notifications(
                     time = LocalDateTime.now()
                         .plusSeconds(secondsText.toLong())
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli(),
-                    title = messageText,
+                    message = messageText,
                     completed = false
-                ))
-                Log.d("NotificationScreen", "Notification scheduled for $secondsText seconds from now.")
+                )
+                notificationViewModel.insertNotification(notificationItem!!)
+                scheduler.schedule(notificationItem!!)
                 secondsText = ""
                 messageText = ""
-//                alarmItem = AlarmItem(
-//                    time = LocalDateTime.now()
-//                        .plusSeconds(secondsText.toLong()),
-//                    title = messageText
-//                )
-//                alarmItem?.let(scheduler::schedule)
-//                secondsText = ""
-//                messageText = ""
             }, modifier = Modifier.padding(16.dp)) {
                 Text("Schedule Notification")
             }
 
             Button(onClick = {
-                scheduler.cancel(Notifications(
-                    time = LocalDateTime.now()
-                        .plusSeconds(secondsText.toLong())
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli(),
-                    title = messageText,
-                    completed = false
-                ))
+                scheduler.cancel(notificationItem!!)
                 secondsText = ""
                 messageText = ""
             },

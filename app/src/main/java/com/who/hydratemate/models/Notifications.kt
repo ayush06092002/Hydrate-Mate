@@ -12,8 +12,8 @@ data class Notifications(
     @PrimaryKey
     @ColumnInfo(name = "time")
     var time: Long,
-    @ColumnInfo(name = "title")
-    var title: String,
     @ColumnInfo(name = "message")
+    var message: String,
+    @ColumnInfo(name = "completed")
     var completed: Boolean
 )

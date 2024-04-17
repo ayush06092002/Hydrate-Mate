@@ -92,6 +92,9 @@ dependencies {
     //Circular Progress Bar
     implementation("com.github.hitanshu-dhawan:CircularProgressBar-Compose:1.0.0-rc01")
 
+    ///LiveData
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.4")
+
     implementation(libs.annotations)
 
     //Permission

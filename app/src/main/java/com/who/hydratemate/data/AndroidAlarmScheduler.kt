@@ -7,23 +7,22 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.who.hydratemate.models.Notifications
+import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.service.AlarmReceiver
-import java.time.ZoneId
 
 class AndroidAlarmScheduler(
-    private val context: Context
-): AlarmScheduler {
-
+    private val context: Context,
+    private val notificationViewModel: NotificationViewModel
+): NotificationScheduler {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
     @SuppressLint("ShortAlarm")
     override fun schedule(item: Notifications) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("notification", item.title)
+            putExtra("notification", item.message)
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             item.time,
-//            item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
                 item.hashCode(),

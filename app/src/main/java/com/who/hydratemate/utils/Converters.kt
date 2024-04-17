@@ -1,17 +1,18 @@
 package com.who.hydratemate.utils
 
-import androidx.room.TypeConverter
+import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): LocalDateTime? {
-        return value?.let { LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC) }
-    }
 
-    @TypeConverter
-    fun dateToTimestamp(date: LocalDateTime?): Long? {
-        return date?.toEpochSecond(ZoneOffset.UTC)
+    companion object {
+        fun epochToLocalDateTime(epoch: Long): String {
+            return LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(epoch),
+                ZoneId.systemDefault()
+            ).format(DateTimeFormatter.ofPattern("HH:mm"))
+        }
     }
 }

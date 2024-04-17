@@ -17,4 +17,11 @@ class NotificationRepository @Inject constructor(private val notificationDao: No
         fun getNotificationsCount() = notificationDao.getNotificationsCount()
 
         suspend fun insertNotification(notification: Notifications) = notificationDao.insertNotification(notification)
+
+        suspend fun markCompleted(id: Long) = notificationDao.markCompleted(id)
+
+        suspend fun markIncomplete(id: Long) = notificationDao.markIncomplete(id)
+
+        fun getCompletedNotificationsCount() : Int = notificationDao.getCompletedNotificationsCount()
+
 }

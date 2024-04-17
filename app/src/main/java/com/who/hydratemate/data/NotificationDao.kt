@@ -4,11 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.TypeConverters
 import com.who.hydratemate.models.Notifications
-import com.who.hydratemate.utils.Converters
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDateTime
 
 @Dao
 interface NotificationDao {
@@ -28,7 +25,16 @@ interface NotificationDao {
     @Query("SELECT COUNT(*) FROM notifications")
     fun getNotificationsCount(): Int
 
+    @Query("SELECT COUNT(*) FROM notifications WHERE completed = 1")
+    fun getCompletedNotificationsCount(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotification(notification: Notifications)
+
+    @Query("UPDATE notifications SET completed = 1 WHERE time = :id")
+    suspend fun markCompleted(id: Long)
+
+    @Query("UPDATE notifications SET completed = 0 WHERE time = :id")
+    suspend fun markIncomplete(id: Long)
 
 }

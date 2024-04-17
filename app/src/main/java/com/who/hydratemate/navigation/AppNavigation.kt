@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,9 +28,9 @@ import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.who.hydratemate.R
-import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.screens.homeScreen.HomeScreen
 import com.who.hydratemate.screens.notiScreen.NotificationScreen
+import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.screens.settingsScreen.SettingsScreen
 import com.who.hydratemate.utils.noRippleClickable
 
@@ -87,13 +86,13 @@ fun AppNavigation() {
 
     }
 
-
+    val viewModel = hiltViewModel<NotificationViewModel>()
     NavHost(navController = navController, startDestination = AppScreens.Home.name) {
         composable(AppScreens.Home.name) {
-            HomeScreen()
+            HomeScreen(viewModel)
         }
         composable(AppScreens.Notifications.name) {
-            val viewModel = hiltViewModel<NotificationViewModel>()
+
             NotificationScreen(viewModel)
         }
         composable(AppScreens.Settings.name) {
