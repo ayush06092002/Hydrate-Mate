@@ -21,10 +21,10 @@ interface SettingsDao {
     suspend fun insertSettings(settings: Settings)
 
     @Query("UPDATE settings SET wake_up_time = :wakeUpTime WHERE id = :id")
-    fun updateWakeUpTime(id: UUID, wakeUpTime: String)
+    fun updateWakeUpTime(id: UUID, wakeUpTime: Long)
 
     @Query("UPDATE settings SET sleep_time = :sleepTime WHERE id = :id")
-    fun updateSleepTime(id: UUID, sleepTime: String)
+    fun updateSleepTime(id: UUID, sleepTime: Long)
 
     @Query("UPDATE settings SET daily_goal = :dailyGoalComplete WHERE id = :id")
     fun updateDailyGoalComplete(id: UUID, dailyGoalComplete: Boolean)

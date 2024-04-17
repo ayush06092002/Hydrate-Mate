@@ -11,9 +11,9 @@ data class Settings(
     @ColumnInfo(name = "id")
     val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = "wake_up_time")
-    val wakeUpTime: String,
+    val wakeUpTime: Long,
     @ColumnInfo(name = "sleep_time")
-    val sleepTime: String,
+    val sleepTime: Long,
     @ColumnInfo(name = "daily_goal")
     val dailyGoalComplete: Boolean,
     @ColumnInfo(name = "reminder_interval")

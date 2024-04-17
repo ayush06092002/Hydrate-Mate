@@ -14,5 +14,16 @@ class Converters {
                 ZoneId.systemDefault()
             ).format(DateTimeFormatter.ofPattern("HH:mm"))
         }
+
+        fun localDateTimeToEpoch(localDateTime: LocalDateTime): Long {
+            return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+
+        fun _epochToLocalDateTime(epoch: Long): LocalDateTime {
+            return LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(epoch),
+                ZoneId.systemDefault()
+            )
+        }
     }
 }

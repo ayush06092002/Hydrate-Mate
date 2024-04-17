@@ -1,5 +1,6 @@
 package com.who.hydratemate.screens.settingsScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,8 +31,9 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.who.hydratemate.models.Settings
+import com.who.hydratemate.utils.Converters
 import com.who.hydratemate.utils.fontFamily
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -41,29 +43,40 @@ fun SettingsScreen(
     TimeSettings(settingsViewModel)
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun TimeSettings(settingsViewModel: SettingsViewModel) {
     var settingsItem: Settings? by remember {
         mutableStateOf(null)
     }
-    var pickedWakeUpTime by remember {
-        mutableStateOf(LocalTime.now())
+    val settingsList = remember {
+        settingsViewModel.settingsList
     }
-    var pickedSleepTime by remember {
-        mutableStateOf(LocalTime.MIDNIGHT)
+    val size = remember {
+        settingsList.value.size
+    }
+    val pickedWakeUpTime = remember {
+        if(settingsList.value.isNotEmpty()) {
+            mutableStateOf(Converters._epochToLocalDateTime(settingsList.value[size - 1].wakeUpTime))
+        } else {
+            mutableStateOf(LocalDateTime.now())
+        }
+    }
+    val pickedSleepTime = remember {
+        if (settingsList.value.isNotEmpty()) {
+            mutableStateOf(Converters._epochToLocalDateTime(settingsList.value[size - 1].sleepTime))
+        } else {
+            mutableStateOf(LocalDateTime.now())
+        }
     }
     val formattedWakeUpTime by remember {
-        derivedStateOf { //24 hour format
-            DateTimeFormatter
-                .ofPattern("hh:mm a")
-                .format(pickedWakeUpTime)
+        derivedStateOf {
+            pickedWakeUpTime.value.format(DateTimeFormatter.ofPattern("HH:mm"))
         }
     }
     val formattedSleepTime by remember {
         derivedStateOf {
-            DateTimeFormatter
-                .ofPattern("hh:mm a")
-                .format(pickedSleepTime)
+            pickedSleepTime.value.format(DateTimeFormatter.ofPattern("HH:mm"))
         }
     }
     val wakeTimeDialogState = rememberMaterialDialogState()
@@ -75,7 +88,7 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
     ) {
         Card(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 60.dp)
                 .width(300.dp)
                 .height(300.dp),
             colors = CardDefaults.cardColors(
@@ -108,7 +121,7 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
                     color = Color(0xFF90E0EF),
                     modifier = Modifier
                 )
-                Divider(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp))
+                Divider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
                 Text(
                     text = "Wake Up Time: $formattedWakeUpTime",
@@ -120,7 +133,7 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
                     modifier = Modifier.padding(5.dp)
                 )
 
-                CreateSetButton(text = "Set Wake Up Time") {
+                CreateSetButton(text = "Set Wake Time") {
                     wakeTimeDialogState.show()
                 }
 
@@ -138,67 +151,62 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
                     sleepTimeDialogState.show()
                 }
 
-                CreateMaterialDialog(
-                    wakeTimeDialogState,
-                    pickedWakeUpTime,
-                    sleepTimeDialogState,
-                    pickedSleepTime
-                )
+                MaterialDialog(
+                    dialogState = wakeTimeDialogState,
+                    buttons = {
+                        positiveButton("OK") {
+                            wakeTimeDialogState.hide()
+                        }
+                        negativeButton("Cancel") {
+                            wakeTimeDialogState.hide()
+                        }
+                    }
+                ) {
+                    timepicker(
+                        initialTime = pickedWakeUpTime.value.toLocalTime(),
+                        title = "Set Wake Up Time",
+                        onTimeChange = {
+                            pickedWakeUpTime.value = it.atDate(pickedWakeUpTime.value.toLocalDate())
+                        }
+                    )
+                }
 
+                MaterialDialog(
+                    dialogState = sleepTimeDialogState,
+                    buttons = {
+                        positiveButton("OK") {
+                            sleepTimeDialogState.hide()
+                        }
+                        negativeButton("Cancel") {
+                            sleepTimeDialogState.hide()
+                        }
+                    }
+                ) {
+                    timepicker(
+                        initialTime = pickedSleepTime.value.toLocalTime(),
+                        title = "Set Sleep Time",
+                        onTimeChange = {
+                            pickedSleepTime.value = it.atDate(pickedSleepTime.value.toLocalDate())
+                        }
+                    )
+                }
+
+                Button(onClick = {
+                    settingsItem = Settings(
+                        wakeUpTime = Converters.localDateTimeToEpoch(pickedWakeUpTime.value),
+                        sleepTime = Converters.localDateTimeToEpoch(pickedSleepTime.value),
+                        dailyGoalComplete = false,
+                        reminderInterval = 0
+                    )
+                    settingsViewModel.insertSettings(settingsItem!!)
+                }) {
+                    Text("Save")
+                }
             }
         }
     }
 }
 
-@Composable
-private fun CreateMaterialDialog(
-    wakeTimeDialogState: MaterialDialogState,
-    pickedWakeUpTime: LocalTime,
-    sleepTimeDialogState: MaterialDialogState,
-    pickedSleepTime: LocalTime
-) {
-    var pickedWakeUpTime1 = pickedWakeUpTime
-    var pickedSleepTime1 = pickedSleepTime
-    MaterialDialog(
-        dialogState = wakeTimeDialogState,
-        buttons = {
-            positiveButton("OK") {
-                wakeTimeDialogState.hide()
-            }
-            negativeButton("Cancel") {
-                wakeTimeDialogState.hide()
-            }
-        }
-    ) {
-        timepicker(
-            initialTime = pickedWakeUpTime1,
-            title = "Set Wake Up Time",
-            onTimeChange = {
-                pickedWakeUpTime1 = it
-            }
-        )
-    }
-
-    MaterialDialog(
-        dialogState = sleepTimeDialogState,
-        buttons = {
-            positiveButton("OK") {
-                sleepTimeDialogState.hide()
-            }
-            negativeButton("Cancel") {
-                sleepTimeDialogState.hide()
-            }
-        }
-    ) {
-        timepicker(
-            initialTime = pickedSleepTime1,
-            title = "Set Sleep Time",
-            onTimeChange = {
-                pickedSleepTime1 = it
-            }
-        )
-    }
-}
 
 @Composable
 fun CreateSetButton(

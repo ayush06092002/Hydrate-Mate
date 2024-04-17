@@ -14,9 +14,9 @@ class SettingsRepository @Inject constructor(private val settingsDao: SettingsDa
 
     suspend fun insertSettings(settings: Settings) = settingsDao.insertSettings(settings)
 
-    fun updateWakeUpTime(id: UUID, wakeUpTime: String) = settingsDao.updateWakeUpTime(id, wakeUpTime)
+    fun updateWakeUpTime(id: UUID, wakeUpTime: Long) = settingsDao.updateWakeUpTime(id, wakeUpTime)
 
-    fun updateSleepTime(id: UUID, sleepTime: String) = settingsDao.updateSleepTime(id, sleepTime)
+    fun updateSleepTime(id: UUID, sleepTime: Long) = settingsDao.updateSleepTime(id, sleepTime)
 
     fun updateDailyGoalComplete(id: UUID, dailyGoalComplete: Boolean) = settingsDao.updateDailyGoalComplete(id, dailyGoalComplete)
 

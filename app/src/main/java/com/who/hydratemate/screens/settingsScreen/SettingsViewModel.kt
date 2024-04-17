@@ -46,12 +46,12 @@ class SettingsViewModel @Inject constructor(private val settingsRepository: Sett
         }
     }
 
-    fun updateWakeUpTime(id: UUID, wakeUpTime: String) {
+    fun updateWakeUpTime(id: UUID, wakeUpTime: Long) {
         viewModelScope.launch {
             settingsRepository.updateWakeUpTime(id, wakeUpTime)
         }
     }
-    fun updateSleepTime(id: UUID, sleepTime: String) {
+    fun updateSleepTime(id: UUID, sleepTime: Long) {
         viewModelScope.launch {
             settingsRepository.updateSleepTime(id, sleepTime)
         }
