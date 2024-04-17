@@ -23,7 +23,6 @@ class NotificationViewModel @Inject constructor(private val repository: Notifica
     val scheduleList = _scheduleList.asStateFlow()
 
     init{
-        Log.d("NotificationViewModel", "init called")
         viewModelScope.launch(Dispatchers.IO){
             repository.getNotifications().distinctUntilChanged().collect{
                 if (it.isNotEmpty()){

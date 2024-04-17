@@ -1,6 +1,6 @@
 package com.who.hydratemate.repository
 
-import com.who.hydratemate.data.NotificationDao
+import com.who.hydratemate.data.notification.NotificationDao
 import com.who.hydratemate.models.Notifications
 import javax.inject.Inject
 

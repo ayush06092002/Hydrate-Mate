@@ -100,6 +100,9 @@ dependencies {
     //Permission
     implementation(libs.accompanist.permissions)
 
+    //DateTimePicker
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

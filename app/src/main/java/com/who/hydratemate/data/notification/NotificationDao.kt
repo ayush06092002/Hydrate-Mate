@@ -1,4 +1,4 @@
-package com.who.hydratemate.data
+package com.who.hydratemate.data.notification
 
 import androidx.room.Dao
 import androidx.room.Insert

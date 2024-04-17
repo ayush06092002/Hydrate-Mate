@@ -32,6 +32,7 @@ import com.who.hydratemate.screens.homeScreen.HomeScreen
 import com.who.hydratemate.screens.notiScreen.NotificationScreen
 import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.screens.settingsScreen.SettingsScreen
+import com.who.hydratemate.screens.settingsScreen.SettingsViewModel
 import com.who.hydratemate.utils.noRippleClickable
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -86,17 +87,18 @@ fun AppNavigation() {
 
     }
 
-    val viewModel = hiltViewModel<NotificationViewModel>()
+    val notificationViewModel = hiltViewModel<NotificationViewModel>()
+    val settingsViewModel = hiltViewModel<SettingsViewModel>()
     NavHost(navController = navController, startDestination = AppScreens.Home.name) {
         composable(AppScreens.Home.name) {
-            HomeScreen(viewModel)
+            HomeScreen(notificationViewModel)
         }
         composable(AppScreens.Notifications.name) {
 
-            NotificationScreen(viewModel)
+            NotificationScreen(notificationViewModel)
         }
         composable(AppScreens.Settings.name) {
-            SettingsScreen()
+            SettingsScreen(settingsViewModel)
         }
 
     }
