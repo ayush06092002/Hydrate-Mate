@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -93,11 +94,11 @@ fun NotificationHistory(notificationViewModel: NotificationViewModel) {
     }
     Box(
         modifier = Modifier
-            .padding(20.dp)
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 70.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White)
             .width(500.dp)
-            .height(300.dp),
+            .fillMaxHeight(),
     ){
         Column(
             modifier = Modifier.padding(20.dp),
@@ -190,9 +191,10 @@ fun NotificationHistory(notificationViewModel: NotificationViewModel) {
                                         notificationViewModel.getCompletedNotificationsCount()
                                     }
                                 }
-                        )
+                            )
                     }
-                    Divider()                }
+                    Divider()
+                }
             }
         }
     }
@@ -212,34 +214,34 @@ fun ProgressStatus(notificationViewModel: NotificationViewModel) {
         contentAlignment = Alignment.Center
     )
     {
-
-        val completedNotificationsCount by notificationViewModel.completedNotificationsCount.observeAsState(initial = 0)
-        val maxNotification = notificationViewModel.scheduleList.value.size
-
-        val animatedProgress = animateFloatAsState(
-            targetValue = completedNotificationsCount.toFloat() / maxNotification.toFloat(),
-            animationSpec = tween(durationMillis = 800, easing = LinearEasing), label = ""
-        )
-
-        LaunchedEffect(completedNotificationsCount) {
-            notificationViewModel.getCompletedNotificationsCount()
-        }
-
-        Log.d("ProgressStatus", "Max: $maxNotification, Completed: $completedNotificationsCount")
-
-        CircularProgressBar(
-            modifier = Modifier.size(240.dp),
-            progress = animatedProgress.value * 100f,
-            progressMax = 100f,
-            progressBarColor = Color(0xFF48CAE4),
-            progressBarWidth = 20.dp,
-            backgroundProgressBarColor = Color(0xFFF5F5F6),
-            backgroundProgressBarWidth = 10.dp,
-            roundBorder = true,
-            startAngle = 180f
-        )
-
-
-
+        NotificationsProgressBar(notificationViewModel = notificationViewModel)
     }
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun NotificationsProgressBar(notificationViewModel: NotificationViewModel) {
+    val completedNotificationsCount by notificationViewModel.completedNotificationsCount.observeAsState(initial = 0)
+    val maxNotification = notificationViewModel.scheduleList.value.size
+
+    val animatedProgress = animateFloatAsState(
+        targetValue = completedNotificationsCount.toFloat() / maxNotification.toFloat(),
+        animationSpec = tween(durationMillis = 800, easing = LinearEasing), label = ""
+    )
+
+    LaunchedEffect(completedNotificationsCount) {
+        notificationViewModel.getCompletedNotificationsCount()
+    }
+
+    CircularProgressBar(
+        modifier = Modifier.size(240.dp),
+        progress = animatedProgress.value * 100f,
+        progressMax = 100f,
+        progressBarColor = Color(0xFF48CAE4),
+        progressBarWidth = 20.dp,
+        backgroundProgressBarColor = Color(0xFFF5F5F6),
+        backgroundProgressBarWidth = 10.dp,
+        roundBorder = true,
+        startAngle = 180f
+    )
 }
