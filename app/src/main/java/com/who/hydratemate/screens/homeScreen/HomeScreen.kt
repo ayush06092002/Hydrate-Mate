@@ -44,18 +44,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hitanshudhawan.circularprogressbar.CircularProgressBar
 import com.who.hydratemate.R
+import com.who.hydratemate.data.AndroidAlarmScheduler
+import com.who.hydratemate.models.Notifications
 import com.who.hydratemate.screens.notiScreen.NotificationViewModel
+import com.who.hydratemate.screens.settingsScreen.SettingsViewModel
+import com.who.hydratemate.sharedPreferences.WeeklyGoalStatus
 import com.who.hydratemate.utils.Converters
 import com.who.hydratemate.utils.fontFamily
 import com.who.hydratemate.utils.loadImageFromAssets
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun HomeScreen(
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    settingsViewModel: SettingsViewModel
 ) {
+    CheckAndAddNotifications(notificationViewModel, settingsViewModel)
     Column(
         modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,6 +79,67 @@ fun HomeScreen(
         ProgressStatus(notificationViewModel)
 
         NotificationHistory(notificationViewModel)
+    }
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun CheckAndAddNotifications(
+    notificationViewModel: NotificationViewModel,
+    settingsViewModel: SettingsViewModel
+) {
+    val currentDate = Converters.epochToLocalDate(
+        LocalDateTime.now()
+        .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+    )
+    val list = remember {
+        notificationViewModel.scheduleList
+    }
+    val totalNotifications = list.value.size
+    val settings = remember {
+        settingsViewModel.settingsList
+    }
+    val settingsSize = settings.value.size
+    val notificationDate: String? = if (settings.value.isNotEmpty()) {
+        Converters.epochToLocalDate(settings.value[settingsSize - 1].wakeUpTime)
+    } else {
+        null
+    }
+    if (notificationDate != null && currentDate != notificationDate) {
+        CheckForDailyCompletedGoal(notificationViewModel = notificationViewModel)
+        Log.d("HomeScreen", "Deleting notifications")
+        val completed = notificationViewModel.completedNotificationsCount.value
+
+        if(completed == totalNotifications && settings.value.isNotEmpty()){
+            Log.d("HomeScreen", "All notifications completed")
+            settingsViewModel.updateDailyGoalComplete(settings.value[settingsSize - 1].id)
+        }
+        notificationViewModel.deleteAllNotifications()
+    }
+}
+
+@Composable
+fun CheckForDailyCompletedGoal(
+    notificationViewModel: NotificationViewModel
+) {
+    val currentTimeMillis = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(0) //for testing purpose
+    WeeklyGoalStatus.CheckIfSunday(
+        LocalContext.current,
+        currentTimeMillis
+    ){
+        Log.d("HomeScreen", "Weekly goal completed")
+        val scheduler = AndroidAlarmScheduler(LocalContext.current, notificationViewModel)
+        val notification = Notifications(
+            time = LocalDateTime.now()
+                .plusSeconds(5)
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli(),
+            message = "Daily goal completed",
+            completed = false
+        )
+        scheduler.schedule(notification)
     }
 }
 
@@ -225,7 +293,7 @@ fun NotificationsProgressBar(notificationViewModel: NotificationViewModel) {
     val maxNotification = notificationViewModel.scheduleList.value.size
 
     val animatedProgress = animateFloatAsState(
-        targetValue = completedNotificationsCount.toFloat() / maxNotification.toFloat(),
+        targetValue = if (maxNotification == 0) 0f else completedNotificationsCount.toFloat() / maxNotification.toFloat(),
         animationSpec = tween(durationMillis = 800, easing = LinearEasing), label = ""
     )
 

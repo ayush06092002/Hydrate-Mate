@@ -91,7 +91,7 @@ fun AppNavigation() {
     val settingsViewModel = hiltViewModel<SettingsViewModel>()
     NavHost(navController = navController, startDestination = AppScreens.Home.name) {
         composable(AppScreens.Home.name) {
-            HomeScreen(notificationViewModel)
+            HomeScreen(notificationViewModel, settingsViewModel)
         }
         composable(AppScreens.Notifications.name) {
 

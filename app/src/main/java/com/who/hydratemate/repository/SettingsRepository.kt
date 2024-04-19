@@ -2,7 +2,6 @@ package com.who.hydratemate.repository
 
 import com.who.hydratemate.data.settings.SettingsDao
 import com.who.hydratemate.models.Settings
-import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 
@@ -16,9 +15,11 @@ class SettingsRepository @Inject constructor(private val settingsDao: SettingsDa
 
     fun updateWakeUpTime(id: UUID, wakeUpTime: Long) = settingsDao.updateWakeUpTime(id, wakeUpTime)
 
+    suspend fun deleteAllSettings() = settingsDao.deleteAllSettings()
+
     fun updateSleepTime(id: UUID, sleepTime: Long) = settingsDao.updateSleepTime(id, sleepTime)
 
-    fun updateDailyGoalComplete(id: UUID, dailyGoalComplete: Boolean) = settingsDao.updateDailyGoalComplete(id, dailyGoalComplete)
+    fun updateDailyGoalComplete(id: UUID) = settingsDao.updateDailyGoalComplete(id)
 
     fun updateReminderInterval(id: UUID, reminderInterval: Long) = settingsDao.updateReminderInterval(id, reminderInterval)
 

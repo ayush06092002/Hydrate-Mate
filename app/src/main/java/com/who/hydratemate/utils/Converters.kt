@@ -25,5 +25,12 @@ class Converters {
                 ZoneId.systemDefault()
             )
         }
+
+        fun epochToLocalDate(epoch: Long): String {
+            return LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(epoch),
+                ZoneId.systemDefault()
+            ).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        }
     }
 }

@@ -51,15 +51,22 @@ class SettingsViewModel @Inject constructor(private val settingsRepository: Sett
             settingsRepository.updateWakeUpTime(id, wakeUpTime)
         }
     }
+
+    fun deleteAllSettings() {
+        CoroutineScope(Dispatchers.IO).launch {
+            settingsRepository.deleteAllSettings()
+        }
+    }
+
     fun updateSleepTime(id: UUID, sleepTime: Long) {
         viewModelScope.launch {
             settingsRepository.updateSleepTime(id, sleepTime)
         }
     }
 
-    fun updateDailyGoalComplete(id: UUID, dailyGoalComplete: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.updateDailyGoalComplete(id, dailyGoalComplete)
+    fun updateDailyGoalComplete(id: UUID) {
+        CoroutineScope(Dispatchers.IO).launch {
+            settingsRepository.updateDailyGoalComplete(id)
         }
     }
     fun updateReminderInterval(id: UUID, reminderInterval: Long) {

@@ -23,11 +23,14 @@ interface SettingsDao {
     @Query("UPDATE settings SET wake_up_time = :wakeUpTime WHERE id = :id")
     fun updateWakeUpTime(id: UUID, wakeUpTime: Long)
 
+    @Query("DELETE FROM settings")
+    suspend fun deleteAllSettings()
+
     @Query("UPDATE settings SET sleep_time = :sleepTime WHERE id = :id")
     fun updateSleepTime(id: UUID, sleepTime: Long)
 
-    @Query("UPDATE settings SET daily_goal = :dailyGoalComplete WHERE id = :id")
-    fun updateDailyGoalComplete(id: UUID, dailyGoalComplete: Boolean)
+    @Query("UPDATE settings SET daily_goal = 1 WHERE id = :id")
+    fun updateDailyGoalComplete(id: UUID)
 
     @Query("UPDATE settings SET reminder_interval = :reminderInterval WHERE id = :id")
     fun updateReminderInterval(id: UUID, reminderInterval: Long)
