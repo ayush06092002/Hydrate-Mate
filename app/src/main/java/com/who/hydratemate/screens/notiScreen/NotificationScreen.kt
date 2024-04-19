@@ -11,7 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,14 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.who.hydratemate.data.AndroidAlarmScheduler
 import com.who.hydratemate.models.Notifications
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NotificationScreen(
@@ -37,15 +33,8 @@ fun NotificationScreen(
     var notificationItem: Notifications? by remember{
         mutableStateOf(null)
     }
-    val notificationPermission = rememberPermissionState(
-        permission = android.Manifest.permission.POST_NOTIFICATIONS
-    )
-    val scheduler = AndroidAlarmScheduler(LocalContext.current, notificationViewModel)
-    LaunchedEffect(key1 = true) {
-        if (!notificationPermission.status.isGranted) {
-            notificationPermission.launchPermissionRequest()
-        }
-    }
+
+    val scheduler = AndroidAlarmScheduler(LocalContext.current)
     Column(
         modifier = Modifier,
         verticalArrangement = Arrangement.Center,

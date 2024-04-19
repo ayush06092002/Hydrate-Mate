@@ -22,6 +22,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
+        var openFromNotification = false
+        var time = 0L
+        if(intent?.hasExtra("notification_time") == true){
+            time = intent.getLongExtra("notification_time", 0)
+            openFromNotification = true
+        }
         setContent {
             HydrateMateTheme {
                 // A surface container using the 'background' color from the theme
@@ -33,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = Color(0xFFF5F5F6)
                     ) {
-                        AppNavigation()
+                        AppNavigation(openFromNotification, time)
                     }
                 }
             }

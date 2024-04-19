@@ -9,9 +9,9 @@ class AlarmReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val message = intent?.getStringExtra("notification")?: return
+        val time = intent.getLongExtra("time", 0)
         val notificationService = NotificationService(context!!)
         Log.d("AlarmReceiver", "Received notification: $message")
-        notificationService.showWaterNotification(message)
-
+        notificationService.showWaterNotification(message, time)
     }
 }

@@ -38,7 +38,7 @@ import com.who.hydratemate.utils.noRippleClickable
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AppNavigation() {
+fun AppNavigation(openFromNotification: Boolean, time: Long) {
     val navController = rememberNavController()
     val selectedIndex = remember { mutableIntStateOf(
         BottomBarItems.Home.ordinal
@@ -91,7 +91,11 @@ fun AppNavigation() {
     val settingsViewModel = hiltViewModel<SettingsViewModel>()
     NavHost(navController = navController, startDestination = AppScreens.Home.name) {
         composable(AppScreens.Home.name) {
-            HomeScreen(notificationViewModel, settingsViewModel)
+            HomeScreen(
+                notificationViewModel,
+                settingsViewModel,
+                openFromNotification,
+                time)
         }
         composable(AppScreens.Notifications.name) {
 

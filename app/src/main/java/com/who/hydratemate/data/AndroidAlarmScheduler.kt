@@ -12,13 +12,13 @@ import com.who.hydratemate.service.AlarmReceiver
 
 class AndroidAlarmScheduler(
     private val context: Context,
-    private val notificationViewModel: NotificationViewModel
 ): NotificationScheduler {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
     @SuppressLint("ShortAlarm")
     override fun schedule(item: Notifications) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("notification", item.message)
+            putExtra("time", item.time)
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
