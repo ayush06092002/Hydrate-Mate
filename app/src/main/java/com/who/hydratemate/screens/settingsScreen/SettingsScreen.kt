@@ -1,6 +1,7 @@
 package com.who.hydratemate.screens.settingsScreen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,11 +37,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.who.hydratemate.models.Settings
+import com.who.hydratemate.navigation.AppScreens
 import com.who.hydratemate.utils.Converters
+import com.who.hydratemate.utils.SaveAlertDialog
 import com.who.hydratemate.utils.fontFamily
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -90,6 +96,9 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
     }
     val wakeTimeDialogState = rememberMaterialDialogState()
     val sleepTimeDialogState = rememberMaterialDialogState()
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -213,16 +222,16 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
                 MyExposedDropdownMenuBox(selectedInterval) {
                     selectedInterval = it
                 }
-                Button(onClick = {
-                    settingsItem = Settings(
-                        wakeUpTime = Converters.localDateTimeToEpoch(pickedWakeUpTime.value),
-                        sleepTime = Converters.localDateTimeToEpoch(pickedSleepTime.value),
-                        dailyGoalComplete = false,
-                        reminderInterval = selectedInterval
-                    )
-                    settingsViewModel.insertSettings(settingsItem!!)
-
-                },
+                Button(
+                    onClick = {
+                        settingsItem = Settings(
+                            wakeUpTime = Converters.localDateTimeToEpoch(pickedWakeUpTime.value),
+                            sleepTime = Converters.localDateTimeToEpoch(pickedSleepTime.value),
+                            dailyGoalComplete = false,
+                            reminderInterval = selectedInterval
+                        )
+                        showDialog = true
+                    },
                     modifier = Modifier
                         .padding(5.dp)
                         .size(100.dp, 50.dp),
@@ -240,6 +249,23 @@ private fun TimeSettings(settingsViewModel: SettingsViewModel) {
 
 
             }
+        }
+        if (showDialog) {
+            SaveAlertDialog(
+                onDismissRequest = {
+                    showDialog = false
+                },
+                onConfirmation = {
+                    Log.d("SettingsScreen", "Deleting all settings")
+                    showDialog = false
+                    settingsViewModel.deleteAllSettings()
+                    settingsViewModel.insertSettings(settingsItem!!)
+                },
+                dialogTitle = "Save Settings",
+                dialogText = "Are you sure you want to save these settings?" +
+                        "Your previous settings will be overwritten" +
+                        "and your today's data will be reset.",
+            )
         }
     }
 }

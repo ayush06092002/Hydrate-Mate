@@ -102,7 +102,9 @@ fun AppNavigation(openFromNotification: Boolean, time: Long) {
             NotificationScreen(notificationViewModel)
         }
         composable(AppScreens.Settings.name) {
-            SettingsScreen(settingsViewModel)
+            SettingsScreen(
+                settingsViewModel
+            )
         }
 
     }

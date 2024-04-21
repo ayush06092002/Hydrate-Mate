@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -68,6 +70,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -78,7 +81,10 @@ fun HomeScreen(
     time: Long
 ) {
     if(openFromNotification){
-        notificationViewModel.markCompleted(time)
+        if(notificationViewModel.scheduleList.value.contains(Notifications(time, String(), false))){
+            Log.d("HomeScreen", "Marking notification as completed: ${Converters.epochToLocalDateTime(time)}")
+            notificationViewModel.markCompleted(time)
+        }
     }
     val notificationService= NotificationService(LocalContext.current)
     notificationService.scheduleMorningNotification(8, 0, "Good Morning. Tap on me to schedule your notifications for the day!")
@@ -92,7 +98,8 @@ fun HomeScreen(
     }
     CheckAndAddNotifications(notificationViewModel, settingsViewModel)
     Column(
-        modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp),
+        modifier = Modifier
+            .padding(top = 20.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -109,6 +116,7 @@ fun HomeScreen(
         NotificationHistory(notificationViewModel)
     }
 }
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -177,6 +185,7 @@ fun CheckAndAddNotifications(
         val sleepDateTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].sleepTime)
         val reminderInterval = settings.value[settingsSize - 1].reminderInterval
         settingsViewModel.deleteAllSettings()
+        Log.d("HomeScreen", "Settings Deleted $currentDate $notificationDate")
         val wakeUpDateTime = LocalDateTime.of(
             wakeUpDate,
             wakeUpTime.toLocalTime()
