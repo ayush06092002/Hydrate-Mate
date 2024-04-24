@@ -2,15 +2,9 @@ package com.who.hydratemate.network
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import com.google.ai.client.generativeai.GenerativeModel
 import com.who.hydratemate.BuildConfig
-import com.who.hydratemate.models.Notifications
-import com.who.hydratemate.screens.geminiScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

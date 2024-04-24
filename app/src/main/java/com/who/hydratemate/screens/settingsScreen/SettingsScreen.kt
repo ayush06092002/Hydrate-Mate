@@ -37,14 +37,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.who.hydratemate.models.Settings
-import com.who.hydratemate.navigation.AppScreens
 import com.who.hydratemate.utils.Converters
 import com.who.hydratemate.utils.SaveAlertDialog
 import com.who.hydratemate.utils.fontFamily

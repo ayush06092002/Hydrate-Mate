@@ -3,11 +3,9 @@ package com.who.hydratemate.data
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
-
 import android.content.Context
 import android.content.Intent
 import com.who.hydratemate.models.Notifications
-import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.service.AlarmReceiver
 
 class AndroidAlarmScheduler(
