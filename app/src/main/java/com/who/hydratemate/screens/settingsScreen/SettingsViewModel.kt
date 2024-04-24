@@ -43,6 +43,7 @@ class SettingsViewModel @Inject constructor(private val settingsRepository: Sett
     fun insertSettings(settings: Settings) {
         viewModelScope.launch {
             settingsRepository.insertSettings(settings)
+            Log.d("SettingsViewModel", "Settings inserted")
         }
     }
 

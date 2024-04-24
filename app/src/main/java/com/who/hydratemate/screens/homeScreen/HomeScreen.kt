@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -56,6 +58,7 @@ import com.who.hydratemate.R
 import com.who.hydratemate.data.AndroidAlarmScheduler
 import com.who.hydratemate.models.Notifications
 import com.who.hydratemate.models.Settings
+import com.who.hydratemate.network.GeminiViewModel
 import com.who.hydratemate.screens.notiScreen.NotificationViewModel
 import com.who.hydratemate.screens.settingsScreen.SettingsViewModel
 import com.who.hydratemate.service.NotificationService
@@ -175,21 +178,26 @@ fun CheckAndAddNotifications(
                 )
             )
         }
-        notificationViewModel.deleteAllNotifications()
+        Log.d("HomeScreen", "Deleting notifications")
+        notificationViewModel.deleteAllNotifications() //this is creating a problem
         if(settings.value.isEmpty()){
             return
         }
         val wakeUpTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].wakeUpTime)
         val wakeUpDate = LocalDateTime.now().toLocalDate()
 
-        val sleepDateTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].sleepTime)
+        val sleepTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].sleepTime)
+        val sleepDateTime = LocalDateTime.of(
+            wakeUpDate,
+            sleepTime.toLocalTime()
+        )
         val reminderInterval = settings.value[settingsSize - 1].reminderInterval
         settingsViewModel.deleteAllSettings()
-        Log.d("HomeScreen", "Settings Deleted $currentDate $notificationDate")
         val wakeUpDateTime = LocalDateTime.of(
             wakeUpDate,
             wakeUpTime.toLocalTime()
         )
+        Log.d("HomeScreen", "Settings Deleted $wakeUpDateTime $sleepDateTime $reminderInterval")
         settingsViewModel.insertSettings(
             Settings(
                 wakeUpTime = Converters.localDateTimeToEpoch(wakeUpDateTime),
@@ -209,14 +217,34 @@ fun CheckAndAddNotifications(
         )
     }
     if(list.value.isEmpty()){
-        Log.d("HomeScreen", "No Notifications found")
-        val wakeUpDateTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].wakeUpTime)
-        val sleepDateTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].sleepTime)
+        Log.d("HomeScreen", "List Empty. hence schedule notifications")
+        val wakeUpTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].wakeUpTime)
+        val wakeUpDate = LocalDateTime.now().toLocalDate()
 
+        val sleepTime = Converters._epochToLocalDateTime(settings.value[settingsSize - 1].sleepTime)
+        val sleepDateTime = LocalDateTime.of(
+            wakeUpDate,
+            sleepTime.toLocalTime()
+        )
+        val wakeUpDateTime = LocalDateTime.of(
+            wakeUpDate,
+            wakeUpTime.toLocalTime()
+        )
+        val reminderInterval = settings.value[settingsSize - 1].reminderInterval
+        settingsViewModel.deleteAllSettings()
+        Log.d("HomeScreen", "Settings Deleted $wakeUpDateTime $sleepDateTime $reminderInterval")
+        settingsViewModel.insertSettings(
+            Settings(
+                wakeUpTime = Converters.localDateTimeToEpoch(wakeUpDateTime),
+                sleepTime = Converters.localDateTimeToEpoch(sleepDateTime),
+                reminderInterval = reminderInterval,
+                dailyGoalComplete = false
+            )
+        )
         AutoNotificationGenerator(
             wakeUpDateTime,
             sleepDateTime,
-            settings.value[settingsSize - 1].reminderInterval,
+            reminderInterval,
             settings,
             settingsSize,
             notificationViewModel,
@@ -236,27 +264,37 @@ private fun AutoNotificationGenerator(
     notificationViewModel: NotificationViewModel,
     scheduler: AndroidAlarmScheduler
 ) {
+    val geminiViewModel = hiltViewModel<GeminiViewModel>()
+    val responseList by geminiViewModel.responseList.collectAsState(emptyList())
+    Log.d("HomeScreen", "Wake up time: $wakeUpDateTime, Sleep time: $sleepDateTime")
     val interval = Duration.between(wakeUpDateTime, sleepDateTime).toMinutes() / reminderInterval
+    Log.d("HomeScreen", "Interval: $interval")
+    LaunchedEffect(responseList) {
+        if(responseList.isEmpty()){
+            Log.d("HomeScreen", "Response list empty")
+            geminiViewModel.waitForResponseList()
+        }
+        if (interval > 0) { // Ensure interval is not zero
+            for (i in 0 until interval.toInt()) {
+                // Calculate notification time at each interval
+                val notificationTime =
+                    wakeUpDateTime.plusMinutes(i * settings.value[settingsSize - 1].reminderInterval)
 
-    if (interval > 0) { // Ensure interval is not zero
-        for (i in 0 until interval.toInt()) {
-            // Calculate notification time at each interval
-            val notificationTime =
-                wakeUpDateTime.plusMinutes(i * settings.value[settingsSize - 1].reminderInterval)
+                // Convert notification time to epoch milliseconds
+                val notificationMillis =
+                    notificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-            // Convert notification time to epoch milliseconds
-            val notificationMillis =
-                notificationTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                // Create and insert notification
+                val notification = Notifications(
+                    time = notificationMillis,
+                    message = responseList[i % responseList.size],
+                    completed = false
+                )
+                notificationViewModel.insertNotification(notification)
 
-            // Create and insert notification
-            val notification = Notifications(
-                time = notificationMillis,
-                message = "Drink water",
-                completed = false
-            )
-            notificationViewModel.insertNotification(notification)
-
-            scheduler.schedule(notification)
+                scheduler.schedule(notification)
+                Log.d("HomeScreen", "Notification scheduled at $notificationTime")
+            }
         }
     }
 
@@ -276,7 +314,7 @@ fun CheckForDailyCompletedGoal(
         LocalContext.current,
         currentTimeMillis
     ){
-        Log.d("HomeScreen", "Weekly goal completed")
+        Log.d("HomeScreen", "Schedule notification for daily goal completed")
         val scheduler = AndroidAlarmScheduler(LocalContext.current)
         val notification = Notifications(
             time = LocalDateTime.now()

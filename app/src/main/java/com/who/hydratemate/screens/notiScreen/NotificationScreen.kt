@@ -1,6 +1,7 @@
 package com.who.hydratemate.screens.notiScreen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -78,6 +79,7 @@ fun NotificationScreen(
                 )
                 notificationViewModel.insertNotification(notificationItem!!)
                 scheduler.schedule(notificationItem!!)
+                Log.d("Notification", "Scheduled from notification screen")
                 secondsText = ""
                 messageText = ""
             }, modifier = Modifier.padding(16.dp)) {

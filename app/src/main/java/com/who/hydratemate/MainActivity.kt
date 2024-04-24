@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.who.hydratemate.navigation.AppNavigation
+import com.who.hydratemate.screens.GeminiScreen
 import com.who.hydratemate.ui.theme.HydrateMateTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         color = Color(0xFFF5F5F6)
                     ) {
                         AppNavigation(openFromNotification, time)
+//                        GeminiScreen()
                     }
                 }
             }

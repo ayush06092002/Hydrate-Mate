@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("dagger.hilt.android.plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -41,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -103,6 +105,12 @@ dependencies {
 
     //DateTimePicker
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
+    //Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+
+    //secret gradle
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
